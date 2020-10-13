@@ -112,7 +112,7 @@ class ArsSimSensorVelRobotRos:
 
     
     # Package path
-    pkg_path = rospkg.RosPack().get_path('ars_sim_sensor_vel_robot')
+    pkg_path = rospkg.RosPack().get_path('ars_sim_sensors_robot')
     
 
     #### READING PARAMETERS ###
