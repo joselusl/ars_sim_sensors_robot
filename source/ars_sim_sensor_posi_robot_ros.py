@@ -82,7 +82,7 @@ class ArsSimSensorPosiRobotRos:
     #
     self.flag_robot_pose_set = False
     self.robot_frame_id = ''
-    self.robot_pose_timestamp = rospy.Time()
+    self.robot_pose_timestamp = rospy.Time().now()
     self.robot_posi = np.zeros((3,), dtype=float)
 
     # Measurement sensor loop
