@@ -61,7 +61,7 @@ class ArsSimSensorVelRobotRos:
   # Robot Vel
   flag_robot_velocity_set = False
   robot_frame_id = ''
-  robot_velocity_timestamp = rospy.Time().now()
+  robot_velocity_timestamp = rospy.Time()
   robot_posi = None
   robot_atti_quat_simp = None
 
@@ -88,7 +88,7 @@ class ArsSimSensorVelRobotRos:
     #
     self.flag_robot_velocity_set = False
     self.robot_frame_id = ''
-    self.robot_velocity_timestamp = rospy.Time().now()
+    self.robot_velocity_timestamp = rospy.Time()
     self.robot_vel_lin = np.zeros((3,), dtype=float)
     self.robot_vel_ang = np.zeros((3,), dtype=float)
 

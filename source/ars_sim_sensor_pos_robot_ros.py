@@ -90,7 +90,7 @@ class ArsSimSensorPosRobotRos:
     #
     self.flag_robot_pose_set = False
     self.robot_frame_id = ''
-    self.robot_pose_timestamp = rospy.Time().now()
+    self.robot_pose_timestamp = rospy.Time()
     self.robot_posi = np.zeros((3,), dtype=float)
     self.robot_atti_quat = ars_lib_helpers.Quaternion.zerosQuat()
     self.robot_atti_quat_simp = ars_lib_helpers.Quaternion.zerosQuatSimp()
