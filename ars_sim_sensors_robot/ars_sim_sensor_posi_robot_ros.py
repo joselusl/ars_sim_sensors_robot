@@ -6,37 +6,29 @@ from numpy import *
 import os
 
 
-
-
 # ROS
+import rclpy
+from rclpy.node import Node
+from rclpy.time import Time
 
-import rospy
-
-import rospkg
+from ament_index_python.packages import get_package_share_directory
 
 import std_msgs.msg
-from std_msgs.msg import Bool
 from std_msgs.msg import Header
-
 
 import geometry_msgs.msg
 from geometry_msgs.msg import Pose
 from geometry_msgs.msg import PoseStamped
-from geometry_msgs.msg import PoseWithCovarianceStamped
 from geometry_msgs.msg import Point
 from geometry_msgs.msg import PointStamped
 
 
-
-
 #
-import ars_lib_helpers
+import ars_lib_helpers.ars_lib_helpers as ars_lib_helpers
 
 
 
-
-
-class ArsSimSensorPosiRobotRos:
+class ArsSimSensorPosiRobotRos(Node):
 
   #######
 
@@ -69,7 +61,9 @@ class ArsSimSensorPosiRobotRos:
 
   #########
 
-  def __init__(self):
+  def __init__(self, node_name='ars_sim_sensor_posi_robot_ros_node'):
+    # Init ROS
+    super().__init__(node_name)
 
     # Covariance on measurement of position
     self.cov_meas_pos = {'x': 0.05, 'y': 0.05, 'z': 0.05}
@@ -77,7 +71,7 @@ class ArsSimSensorPosiRobotRos:
     #
     self.flag_robot_pose_set = False
     self.robot_frame_id = ''
-    self.robot_pose_timestamp = rospy.Time()
+    self.robot_pose_timestamp = Time()
     self.robot_posi = np.zeros((3,), dtype=float)
 
     # Measurement sensor loop
@@ -86,53 +80,49 @@ class ArsSimSensorPosiRobotRos:
     # Timer
     self.meas_sens_loop_timer = None
 
-
+    #
+    self.__init(node_name)
 
     # end
     return
 
 
-  def init(self, node_name='ars_sim_sensor_posi_robot_ros_node'):
-    #
-
-    # Init ROS
-    rospy.init_node(node_name, anonymous=True)
-
+  def __init(self, node_name='ars_sim_sensor_posi_robot_ros_node'):
     
     # Package path
-    pkg_path = rospkg.RosPack().get_path('ars_sim_sensors_robot')
-    
+    try:
+      pkg_path = get_package_share_directory('ars_sim_sensors_robot')
+      print(f"The path to the package is: {pkg_path}")
+    except PackageNotFoundError:
+      print("Package not found")
+
 
     #### READING PARAMETERS ###
-    
-    # TODO
+    # 
 
     ###
 
-
-    
     # End
     return
 
 
   def open(self):
 
-
     # Subscribers
 
     # 
-    self.robot_pose_sub = rospy.Subscriber('robot_pose', PoseStamped, self.robotPositionCallback)
+    self.robot_pose_sub = self.create_subscription(PoseStamped, 'robot_pose', self.robotPositionCallback, qos_profile=10)
 
 
     # Publishers
 
     # 
-    self.meas_robot_posi_pub = rospy.Publisher('meas_robot_position', PointStamped, queue_size=1)
+    self.meas_robot_posi_pub = self.create_publisher(PointStamped, 'meas_robot_position', qos_profile=10)
 
 
     # Timers
     #
-    self.meas_sens_loop_timer = rospy.Timer(rospy.Duration(1.0/self.meas_sens_loop_freq), self.measSensorLoopTimerCallback)
+    self.meas_sens_loop_timer = self.create_timer(1.0/self.meas_sens_loop_freq, self.measSensorLoopTimerCallback)
 
 
 
@@ -142,7 +132,7 @@ class ArsSimSensorPosiRobotRos:
 
   def run(self):
 
-    rospy.spin()
+    rclpy.spin(self)
 
     return
 
@@ -166,10 +156,7 @@ class ArsSimSensorPosiRobotRos:
 
 
 
-  def measSensorLoopTimerCallback(self, timer_msg):
-
-    # Get time
-    time_stamp_current = rospy.Time.now()
+  def measSensorLoopTimerCallback(self):
 
     #
     if(self.flag_robot_pose_set == False):

@@ -6,13 +6,12 @@ from numpy import *
 import os
 
 
-
-
 # ROS
+import rclpy
+from rclpy.node import Node
+from rclpy.time import Time
 
-import rospy
-
-import rospkg
+from ament_index_python.packages import get_package_share_directory
 
 import std_msgs.msg
 from std_msgs.msg import Bool
@@ -25,16 +24,13 @@ from geometry_msgs.msg import TwistStamped
 from geometry_msgs.msg import TwistWithCovarianceStamped
 
 
-
-
 #
-import ars_lib_helpers
+import ars_lib_helpers.ars_lib_helpers as ars_lib_helpers
 
 
 
 
-
-class ArsSimSensorVelRobotRos:
+class ArsSimSensorVelRobotRos(Node):
 
   #######
 
@@ -55,7 +51,7 @@ class ArsSimSensorVelRobotRos:
   # Robot Vel
   flag_robot_velocity_set = False
   robot_frame_id = ''
-  robot_velocity_timestamp = rospy.Time()
+  robot_velocity_timestamp = Time()
   robot_posi = None
   robot_atti_quat_simp = None
 
@@ -70,7 +66,10 @@ class ArsSimSensorVelRobotRos:
 
   #########
 
-  def __init__(self):
+  def __init__(self, node_name='ars_sim_sensor_vel_robot_node'):
+
+    # Init ROS
+    super().__init__(node_name)
 
     # Covariance on measurement of linear vel
     self.cov_meas_vel_lin = {'x': 0.01, 'y': 0.01, 'z': 0.01}
@@ -82,7 +81,7 @@ class ArsSimSensorVelRobotRos:
     #
     self.flag_robot_velocity_set = False
     self.robot_frame_id = ''
-    self.robot_velocity_timestamp = rospy.Time()
+    self.robot_velocity_timestamp = Time()
     self.robot_vel_lin = np.zeros((3,), dtype=float)
     self.robot_vel_ang = np.zeros((3,), dtype=float)
 
@@ -93,30 +92,31 @@ class ArsSimSensorVelRobotRos:
     # Timer
     self.meas_sens_loop_timer = None
 
+    #
+    self.__init(node_name)
 
     # end
     return
 
 
-  def init(self, node_name='ars_sim_sensor_vel_robot_node'):
-    #
-
-    # Init ROS
-    rospy.init_node(node_name, anonymous=True)
-
+  def __init(self, node_name='ars_sim_sensor_vel_robot_node'):
+    
     
     # Package path
-    pkg_path = rospkg.RosPack().get_path('ars_sim_sensors_robot')
+    try:
+      pkg_path = get_package_share_directory('ars_sim_sensors_robot')
+      print(f"The path to the package is: {pkg_path}")
+    except PackageNotFoundError:
+      print("Package not found")
     
 
     #### READING PARAMETERS ###
     
-    # TODO
+    # 
 
     ###
 
 
-    
     # End
     return
 
@@ -127,20 +127,20 @@ class ArsSimSensorVelRobotRos:
     # Subscribers
 
     # 
-    self.robot_velocity_sub = rospy.Subscriber('robot_velocity', TwistStamped, self.robotVelocityCallback)
+    self.robot_velocity_sub = self.create_subscription(TwistStamped, 'robot_velocity', self.robotVelocityCallback, qos_profile=10)
     
 
     # Publishers
 
     # 
-    self.meas_robot_velocity_pub = rospy.Publisher('meas_robot_velocity', TwistStamped, queue_size=1)
+    self.meas_robot_velocity_pub = self.create_publisher(TwistStamped, 'meas_robot_velocity', qos_profile=10)
     # 
-    self.meas_robot_velocity_cov_pub = rospy.Publisher('meas_robot_velocity_cov', TwistWithCovarianceStamped, queue_size=1)
+    self.meas_robot_velocity_cov_pub = self.create_publisher(TwistWithCovarianceStamped, 'meas_robot_velocity_cov', qos_profile=10)
 
 
     # Timers
     #
-    self.meas_sens_loop_timer = rospy.Timer(rospy.Duration(1.0/self.meas_sens_loop_freq), self.measSensorLoopTimerCallback)
+    self.meas_sens_loop_timer = self.create_timer(1.0/self.meas_sens_loop_freq, self.measSensorLoopTimerCallback)
 
 
     # End
@@ -149,7 +149,7 @@ class ArsSimSensorVelRobotRos:
 
   def run(self):
 
-    rospy.spin()
+    rclpy.spin(self)
 
     return
 
@@ -179,10 +179,7 @@ class ArsSimSensorVelRobotRos:
     return
 
 
-  def measSensorLoopTimerCallback(self, timer_msg):
-
-    # Get time
-    time_stamp_current = rospy.Time.now()
+  def measSensorLoopTimerCallback(self):
 
     #
     if(self.flag_robot_velocity_set == False):
@@ -237,7 +234,7 @@ class ArsSimSensorVelRobotRos:
 
     #
     meas_robot_velocity_stamp_cov_msg.header = meas_header_msg
-    meas_robot_velocity_stamp_cov_msg.twist.covariance = meas_cov_vel.reshape((36,1))
+    meas_robot_velocity_stamp_cov_msg.twist.covariance = meas_cov_vel.reshape((36,))
     meas_robot_velocity_stamp_cov_msg.twist.twist = meas_robot_velocity_msg
     
     #
