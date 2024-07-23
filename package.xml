@@ -8,6 +8,9 @@
 
   <license>BSD</license>
 
+  <exec_depend>python-numpy</exec_depend>
+  <exec_depend>python-nvector</exec_depend>
+
   <exec_depend>ament_index_python</exec_depend>
   
   <exec_depend>std_msgs</exec_depend>

@@ -106,7 +106,7 @@ class ArsSimSensorPosRobotRos(Node):
     try:
       pkg_path = get_package_share_directory('ars_sim_sensors_robot')
       print(f"The path to the package is: {pkg_path}")
-    except PackageNotFoundError:
+    except ModuleNotFoundError:
       print("Package not found")
 
     
@@ -196,15 +196,15 @@ class ArsSimSensorPosRobotRos(Node):
     meas_atti_quat = ars_lib_helpers.Quaternion.zerosQuat()
 
     # Position
-    meas_posi[0] = self.robot_posi[0] + np.random.normal(loc = 0.0, scale = math.sqrt(self.cov_meas_pos['x']))
-    meas_posi[1] = self.robot_posi[1] + np.random.normal(loc = 0.0, scale = math.sqrt(self.cov_meas_pos['y']))
-    meas_posi[2] = self.robot_posi[2] + np.random.normal(loc = 0.0, scale = math.sqrt(self.cov_meas_pos['z']))
+    meas_posi[0] = self.robot_posi[0] + np.random.normal(loc = 0.0, scale = np.math.sqrt(self.cov_meas_pos['x']))
+    meas_posi[1] = self.robot_posi[1] + np.random.normal(loc = 0.0, scale = np.math.sqrt(self.cov_meas_pos['y']))
+    meas_posi[2] = self.robot_posi[2] + np.random.normal(loc = 0.0, scale = np.math.sqrt(self.cov_meas_pos['z']))
 
     # Attitude
     noise_atti_ang = np.zeros((3,), dtype=float)
-    noise_atti_ang[0] = np.random.normal(loc = 0.0, scale = math.sqrt(self.cov_meas_att['x']))
-    noise_atti_ang[1] = np.random.normal(loc = 0.0, scale = math.sqrt(self.cov_meas_att['y']))
-    noise_atti_ang[2] = np.random.normal(loc = 0.0, scale = math.sqrt(self.cov_meas_att['z']))
+    noise_atti_ang[0] = np.random.normal(loc = 0.0, scale = np.math.sqrt(self.cov_meas_att['x']))
+    noise_atti_ang[1] = np.random.normal(loc = 0.0, scale = np.math.sqrt(self.cov_meas_att['y']))
+    noise_atti_ang[2] = np.random.normal(loc = 0.0, scale = np.math.sqrt(self.cov_meas_att['z']))
     noise_atti_quat_tf = tf_transformations.quaternion_from_euler(noise_atti_ang[0], noise_atti_ang[1], noise_atti_ang[2], axes='sxyz')
     noise_atti_quat = np.roll(noise_atti_quat_tf, 1)
     meas_atti_quat = ars_lib_helpers.Quaternion.quatProd(self.robot_atti_quat, noise_atti_quat)

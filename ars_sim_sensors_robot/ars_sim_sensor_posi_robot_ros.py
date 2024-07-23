@@ -93,7 +93,7 @@ class ArsSimSensorPosiRobotRos(Node):
     try:
       pkg_path = get_package_share_directory('ars_sim_sensors_robot')
       print(f"The path to the package is: {pkg_path}")
-    except PackageNotFoundError:
+    except ModuleNotFoundError:
       print("Package not found")
 
 
@@ -169,9 +169,9 @@ class ArsSimSensorPosiRobotRos(Node):
     meas_posi = np.zeros((3,), dtype=float)
 
     # Position
-    meas_posi[0] = self.robot_posi[0] + np.random.normal(loc = 0.0, scale = math.sqrt(self.cov_meas_pos['x']))
-    meas_posi[1] = self.robot_posi[1] + np.random.normal(loc = 0.0, scale = math.sqrt(self.cov_meas_pos['y']))
-    meas_posi[2] = self.robot_posi[2] + np.random.normal(loc = 0.0, scale = math.sqrt(self.cov_meas_pos['z']))
+    meas_posi[0] = self.robot_posi[0] + np.random.normal(loc = 0.0, scale = np.math.sqrt(self.cov_meas_pos['x']))
+    meas_posi[1] = self.robot_posi[1] + np.random.normal(loc = 0.0, scale = np.math.sqrt(self.cov_meas_pos['y']))
+    meas_posi[2] = self.robot_posi[2] + np.random.normal(loc = 0.0, scale = np.math.sqrt(self.cov_meas_pos['z']))
 
     # Covariance
     #meas_cov_posi = np.diag([self.cov_meas_pos['x'], self.cov_meas_pos['y'], self.cov_meas_pos['z']])
