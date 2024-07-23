@@ -8,6 +8,8 @@
 
   <license>BSD</license>
 
+  <depend>rclpy</depend>
+
   <exec_depend>python-numpy</exec_depend>
   <exec_depend>python-nvector</exec_depend>
 
