@@ -94,9 +94,9 @@ class ArsSimSensorAttiRobotRos(Node):
     # Package path
     try:
       pkg_path = get_package_share_directory('ars_sim_sensors_robot')
-      print(f"The path to the package is: {pkg_path}")
+      self.get_logger().info(f"The path to the package is: {pkg_path}")
     except ModuleNotFoundError:
-      print("Package not found")
+      self.get_logger().info("Package not found")
     
 
     #### READING PARAMETERS ###
