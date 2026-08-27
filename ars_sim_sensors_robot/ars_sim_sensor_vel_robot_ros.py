@@ -3,6 +3,8 @@
 import numpy as np
 from numpy import *
 
+import math
+
 import os
 
 
@@ -192,14 +194,14 @@ class ArsSimSensorVelRobotRos(Node):
     meas_vel_ang = np.zeros((3,), dtype=float)
 
     #
-    meas_vel_lin[0] = self.robot_vel_lin[0] + np.random.normal(loc = 0.0, scale = np.math.sqrt(self.cov_meas_vel_lin['x']))
-    meas_vel_lin[1] = self.robot_vel_lin[1] + np.random.normal(loc = 0.0, scale = np.math.sqrt(self.cov_meas_vel_lin['y']))
-    meas_vel_lin[2] = self.robot_vel_lin[2] + np.random.normal(loc = 0.0, scale = np.math.sqrt(self.cov_meas_vel_lin['z']))
+    meas_vel_lin[0] = self.robot_vel_lin[0] + np.random.normal(loc = 0.0, scale = math.sqrt(self.cov_meas_vel_lin['x']))
+    meas_vel_lin[1] = self.robot_vel_lin[1] + np.random.normal(loc = 0.0, scale = math.sqrt(self.cov_meas_vel_lin['y']))
+    meas_vel_lin[2] = self.robot_vel_lin[2] + np.random.normal(loc = 0.0, scale = math.sqrt(self.cov_meas_vel_lin['z']))
 
     #
-    meas_vel_ang[0] = self.robot_vel_ang[0] + np.random.normal(loc = 0.0, scale = np.math.sqrt(self.cov_meas_vel_ang['x']))
-    meas_vel_ang[1] = self.robot_vel_ang[1] + np.random.normal(loc = 0.0, scale = np.math.sqrt(self.cov_meas_vel_ang['y']))
-    meas_vel_ang[2] = self.robot_vel_ang[2] + np.random.normal(loc = 0.0, scale = np.math.sqrt(self.cov_meas_vel_ang['z']))
+    meas_vel_ang[0] = self.robot_vel_ang[0] + np.random.normal(loc = 0.0, scale = math.sqrt(self.cov_meas_vel_ang['x']))
+    meas_vel_ang[1] = self.robot_vel_ang[1] + np.random.normal(loc = 0.0, scale = math.sqrt(self.cov_meas_vel_ang['y']))
+    meas_vel_ang[2] = self.robot_vel_ang[2] + np.random.normal(loc = 0.0, scale = math.sqrt(self.cov_meas_vel_ang['z']))
 
     # Covariance
     meas_cov_vel = np.diag([self.cov_meas_vel_lin['x'], self.cov_meas_vel_lin['y'], self.cov_meas_vel_lin['z'], self.cov_meas_vel_ang['x'], self.cov_meas_vel_ang['y'], self.cov_meas_vel_ang['z']])
